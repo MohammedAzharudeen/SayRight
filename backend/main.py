@@ -14,13 +14,21 @@ app = FastAPI(title="SayRight API")
 # CORS - Configure for both local and production
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
 
+# Build allowed origins list
+allowed_origins = [
+    "http://localhost:5173",  # Local development
+]
+
+# Add production frontend URL if set
+if FRONTEND_URL and FRONTEND_URL != "http://localhost:5173":
+    allowed_origins.append(FRONTEND_URL)
+
+# Also allow the specific Vercel URL
+allowed_origins.append("https://say-right.vercel.app")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",  # Local development
-        FRONTEND_URL,  # Production (from env)
-        "https://*.vercel.app",  # Vercel preview deployments
-    ],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
